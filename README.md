@@ -1,6 +1,6 @@
 # vue-dusion-keyboard
 
-> 基于vue的一款js键盘，支持`拼音输入`和`手写输入`，临时[demo地址](https://dusionlike.github.io/)
+> 基于vue的一款js键盘，支持`拼音输入`和`手写输入`，临时[demo地址](http://jsrtj.fotoit.cn/iis/keyboard-demo/)
 ---
 
 ## 安装
@@ -49,7 +49,7 @@ Vue.use(VueDusionKeyboard)
 
 ### 互联网模式
 组件上添加`hand-write-api`属性即可切换互联网模式，可以直接运行在浏览器中
-> 手写输入互联网接口地址见临时[demo地址](https://dusionlike.github.io/)。<br>注意：临时地址仅供学习之用，随时可能关闭。
+> 手写输入互联网接口地址见临时[demo地址](http://jsrtj.fotoit.cn/iis/keyboard-demo/)。<br>注意：临时地址仅供学习之用，随时可能关闭。
 ---
 ## Animate.css
 此项目引用了[animate.css](https://daneden.github.io/animate.css/)，用于键盘显示隐藏的过渡动画，内置fadeInUp和fadeOutDown，如需其他效果，请引入animate.css文件，然后配置属性`enter-active-class`和`leave-active-class`
@@ -73,5 +73,5 @@ Vue.use(VueDusionKeyboard)
 |**blurHide**|当`input`标签失去焦点时是否隐藏输入组件|Boolean|true/false|true|
 |**enter-active-class**|输入组件弹出来的动画效果，基于[Animate.css](https://daneden.github.io/animate.css/)|String|见 [Animate.css](https://daneden.github.io/animate.css/) 官网|fadeInUp|
 |**leave-active-class**|输入组件隐藏时的动画效果|String|同上|fadeOutDown|
-|**hand-write-api**|手写输入接口地址，不传则为离线electron模式|String|见[demo](https://dusionlike.github.io/)|无
+|**hand-write-api**|手写输入接口地址，不传则为离线electron模式|String|见[demo](http://jsrtj.fotoit.cn/iis/keyboard-demo/)|无
 
