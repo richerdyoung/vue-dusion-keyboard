@@ -187,33 +187,30 @@ import dict from "./dist/pinyin_dict_notone";
 import paint from "./paint.vue";
 
 export default {
+  name: "vue-dusion-keyboard",
   mounted() {
-    // let _this = this;
-    // this.input.onblur = function() {
-    //   _this.$emit("hide");
-    // };
+    //注册全局方法
+    if (this.window) {
+      window.$show_keyboard = this.show_keyboard;
+      window.$hide_keyboard = this.hide_keyboard;
+    }
+
     const _this = this;
     this.$nextTick(() => {
       //每个input添加事件
       let inputAll = document.querySelectorAll("input");
       inputAll.forEach(input => {
         if (_this.all || input.dataset.mode) {
-          input.addEventListener("focus", _this.showKeyBoard);
+          input.addEventListener("focus", _this.show_keyboard);
           if (_this.blurHide)
-            input.addEventListener("blur", e => {
-              if (
-                _this.all ||
-                (e.relatedTarget && e.relatedTarget.dataset.mode)
-              )
-                return;
-              _this.show = false;
-            });
+            input.addEventListener("blur", _this.hide_keyboard);
         }
       });
     });
   },
   components: { paint },
   props: {
+    window: { type: Boolean, default: false },
     hand: { type: Boolean, default: false },
     float: { type: Boolean, default: false },
     all: { type: Boolean, default: false },
@@ -222,11 +219,6 @@ export default {
     LeaveActiveClass: { type: String, default: "fadeOutDown" },
     HandWriteApi: [String]
   },
-  //props: ["hand", "float", "all"],
-  // props: {
-  // input: [HTMLInputElement, HTMLTextAreaElement],
-  // def_mode: { type: String, default: "cn" }
-  // },
   data() {
     return {
       st: "",
@@ -238,22 +230,12 @@ export default {
       main_width: 0,
       main_height: 0,
       number_keys: AllKey.number,
-      // number_keys2: AllKey.number2,
-      // letter_keys: AllKey.cap_letter,
       cn_input: "",
       cn_list_str: "",
       l_min: 0,
       l_max: 12,
       handLib: "CN"
     };
-  },
-  watch: {
-    // input() {
-    //   let _this = this;
-    //   this.input.onblur = function() {
-    //     _this.$emit("hide");
-    //   };
-    // }
   },
   computed: {
     number_keys2() {
@@ -289,11 +271,8 @@ export default {
     }
   },
   methods: {
-    /**重新初始化一下canvas的位置信息 */
-    UpdateBound() {
-      this.$refs.paint && this.$refs.paint.UpdateBound();
-    },
-    showKeyBoard(e) {
+    /**注册显示键盘事件 */
+    show_keyboard(e) {
       this.input = e.target;
       this.show = true;
       this.mode = e.target.dataset.mode;
@@ -307,6 +286,15 @@ export default {
           top: bound.y + bound.height + 10 + toptop + "px"
         };
       }
+    },
+    /**注册隐藏键盘事件 */
+    hide_keyboard(e) {
+      if (this.all || (e.relatedTarget && e.relatedTarget.dataset.mode)) return;
+      this.show = false;
+    },
+    /**重新初始化一下canvas的位置信息 */
+    UpdateBound() {
+      this.$refs.paint && this.$refs.paint.UpdateBound();
     },
     HideKey(e) {
       this.show = false;
@@ -452,7 +440,7 @@ export default {
 
 
 <style lang="scss" scoped>
-@import './style/animate.part.css';
+@import "./style/animate.part.css";
 i {
   font-style: normal;
 }

@@ -27,9 +27,25 @@ Vue.use(VueDusionKeyboard)
 <vue-dusion-keyboard float></vue-dusion-keyboard>
 ```
 
-组件添加`all`属性即可为所有input标签注册弹出输入法
+组件添加`all`属性即可为所有input标签注册弹出键盘
 ```
 <vue-dusion-keyboard all float :blurHide="true" hand></vue-dusion-keyboard>
+```
+
+**对于js动态生成的输入框，vue-dusion-keyboard提供以下两种方法注册**
+- 调用组件内部显示和隐藏的方法
+```
+//添加ref属性 ref="keyboard"
+<vue-dusion-keyboard ref="keyboard" all float hand></vue-dusion-keyboard>
+//input标签上注册事件
+<input type="text" @focus="$refs.keyboard.show_keyboard" @blur="$refs.keyboard.hide_keyboard" />
+```
+- 将显示和隐藏的方法挂载在window对象上
+```
+//组件添加window属性
+<vue-dusion-keyboard window all float :blurHide="true" hand></vue-dusion-keyboard>
+//input标签上注册事件
+<input type="text" onfocus="$show_keyboard(event)" onblur="$hide_keyboard(event)" />
 ```
 ---
 
@@ -74,4 +90,16 @@ Vue.use(VueDusionKeyboard)
 |**enter-active-class**|输入组件弹出来的动画效果，基于[Animate.css](https://daneden.github.io/animate.css/)|String|见 [Animate.css](https://daneden.github.io/animate.css/) 官网|fadeInUp|
 |**leave-active-class**|输入组件隐藏时的动画效果|String|同上|fadeOutDown|
 |**hand-write-api**|手写输入接口地址，不传则为离线electron模式|String|见[demo](http://jsrtj.fotoit.cn/iis/keyboard-demo/)|无
+|**window**|是否将显示和隐藏的方法挂载在window对象上，<br>方法名前面将会加上'$'|Boolean|true/false|false|
+
+## 组件方法
+|方法名|说明|参数|
+|:-:|:-|:-|
+|show_keyboard|注册显示键盘事件|event|
+|hide_keyboard|注册隐藏键盘事件|event|
+
+### 更新
+- **v1.0.2**<br>
+1.添加动态创建的input标签呼出键盘的解决方案
+
 

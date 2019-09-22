@@ -9,8 +9,13 @@
     数字：
     <input type="text" data-mode="num" />
     空：
-    <input type="text"/>
-    <vue-dusion-keyboard hand float HandWriteApi="http://localhost/HandWriteApi/words"></vue-dusion-keyboard>
+    <input v-if="show" @focus="$refs.keyboard.show_keyboard" type="text" />
+    <vue-dusion-keyboard
+      ref="keyboard"
+      hand
+      float
+      HandWriteApi="http://localhost/HandWriteApi/words"
+    ></vue-dusion-keyboard>
     <!-- <vue-dusion-keyboard hand float :blurHide="false"></vue-dusion-keyboard> -->
     <!-- :blurHide="false" -->
   </div>
@@ -19,9 +24,13 @@
 <script>
 export default {
   name: "app",
+  mounted() {
+    this.show = true
+  },
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
+      msg: "Welcome to Your Vue.js App",
+      show:false
     };
   }
 };
