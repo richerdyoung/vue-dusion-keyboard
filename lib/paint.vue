@@ -1,5 +1,5 @@
 <template>
-  <div class="keyboard-paint" style="margin-top:5px;">
+  <div :class="'keyboard-paint keyboard-paint__'+size" style="margin-top:5px;">
     <div class="canvas-box">
       <canvas
         :width="p_width*0.4"
@@ -48,6 +48,7 @@ export default {
     window.removeEventListener("scroll", this.UpdateBound);
   },
   props: {
+    size:String,
     p_width: [String, Number],
     p_height: [String, Number],
     lib: {
@@ -179,9 +180,9 @@ export default {
       this.clickY = [];
       this.clickC = [];
       let ctx = this.$refs.canvas.getContext("2d");
-      ctx.clearRect(0, 0, this.p_width - 760, this.p_height - 10);
+      ctx.clearRect(0, 0, this.p_width, this.p_height);
       ctx.fillStyle = "rgba(238,111,111,0.2)";
-      ctx.font = "bold 120px Arial";
+      ctx.font = "bold 100px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(
@@ -225,6 +226,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import './style/primary.scss';
+@import './style/mini.scss';
 .keyboard-paint {
   display: inline-block;
   vertical-align: middle;
@@ -243,7 +246,7 @@ export default {
     margin-left: 8px;
     td {
       border: 1px solid #aaa;
-      width: 110px;
+      // width: 90px;
       height: 90px;
       font-size: 40px;
       font-weight: bold;

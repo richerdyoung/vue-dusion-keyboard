@@ -4,7 +4,13 @@
     :leave-active-class="'animated faster '+LeaveActiveClass"
     @after-enter="UpdateBound"
   >
-    <div v-show="show" :style="st" class="my-keyboard" @mousedown="mousedown" ref="my_keyboard">
+    <div
+      v-show="show"
+      :style="st"
+      :class="'my-keyboard my-keyboard__'+size"
+      @mousedown="mousedown"
+      ref="my_keyboard"
+    >
       <div v-if="mode==='cn'" class="pinyin">
         <div>
           <span>{{cn_input}}</span>
@@ -75,6 +81,7 @@
         </div>
         <paint
           ref="paint"
+          :size="size"
           :p_width="main_width"
           :p_height="main_height"
           @SelectText="HandText"
@@ -142,7 +149,7 @@
           :key="index+31"
           @click="e=>clickKey(e, key)"
         >{{key}}</span>
-        <span class="key key_hide" style="width: 140px;margin-left: 48px;" @click="HideKey">
+        <span class="key key_hide" @click="HideKey">
           <svg class="jp" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M390.94044445 560.84859262h97.39377777V463.45481485H390.94044445v97.39377777zM560.24177778 317.81925929H463.75822222v97.39377778h97.39377778V317.81925929z m-145.63555556 0H318.12266667v97.39377778h97.39377778V317.81925929z m291.27111111 0H609.39377778v97.39377778h97.39377777V317.81925929zM536.576 560.84859262h97.39377778V463.45481485H536.576v97.39377777zM268.97066667 317.81925929H172.48711111v97.39377778h97.39377778V317.81925929z m486.05866666 97.39377778h97.39377778V317.81925929H755.02933333v97.39377778z m145.63555556-243.02933334H123.33511111c-53.70311111 0-97.39377778 43.69066667-97.39377778 97.39377778V754.72592595c0 53.70311111 43.69066667 97.39377778 97.39377778 97.39377778h776.41955556c53.70311111 0 97.39377778-43.69066667 97.39377778-97.39377778V269.57748151c0-53.70311111-43.69066667-97.39377778-96.48355556-97.39377778z m48.24177778 582.54222222c0 26.39644445-21.84533333 48.24177778-48.24177778 48.24177778H123.33511111c-26.39644445 0-48.24177778-21.84533333-48.24177778-48.24177778V269.57748151c0-26.39644445 21.84533333-48.24177778 48.24177778-48.24177778h776.41955556c26.39644445 0 48.24177778 21.84533333 48.24177778 48.24177778l0.91022222 485.14844444zM682.21155555 560.84859262h97.39377778V463.45481485H682.21155555v97.39377777z m-388.66488888 145.63555556h436.90666666V609.0903704H293.54666667v97.39377778zM341.78844445 463.45481485H245.30488889v97.39377777h97.39377778V463.45481485z"
@@ -166,7 +173,7 @@
         <span @click="mode='hand'" class="key red">手写</span>
         <span @click="num_change()" class="key blue">数字</span>
         <span @click="bd_change()" class="key blue">标点</span>
-        <span class="key" @click="e=>clickKey(e, '@',true)">@</span>
+        <!-- <span class="key" @click="e=>clickKey(e, '@',true)">@</span> -->
         <span class="key" @click="e=>clickKey(e, '.',true)">.</span>
         <span class="key space" @click="e=>clickKey(e, ' ',true)">空格</span>
         <span class="key def-del" style="width:140px;" @click="del()">
@@ -194,22 +201,12 @@ export default {
       window.$show_keyboard = this.show_keyboard;
       window.$hide_keyboard = this.hide_keyboard;
     }
-
-    const _this = this;
-    this.$nextTick(() => {
-      //每个input添加事件
-      let inputAll = document.querySelectorAll("input");
-      inputAll.forEach(input => {
-        if (_this.all || input.dataset.mode) {
-          input.addEventListener("focus", _this.show_keyboard);
-          if (_this.blurHide)
-            input.addEventListener("blur", _this.hide_keyboard);
-        }
-      });
-    });
+    window.sign_up_keyboard = this.sign_up_keyboard;
+    this.sign_up_keyboard();
   },
   components: { paint },
   props: {
+    size: { type: String, default: "primary" },
     window: { type: Boolean, default: false },
     hand: { type: Boolean, default: false },
     float: { type: Boolean, default: false },
@@ -233,7 +230,7 @@ export default {
       cn_input: "",
       cn_list_str: "",
       l_min: 0,
-      l_max: 12,
+      l_max: 10,
       handLib: "CN"
     };
   },
@@ -271,6 +268,22 @@ export default {
     }
   },
   methods: {
+    /**重新注册所有input标签 */
+    sign_up_keyboard() {
+      const _this = this;
+      this.$nextTick(() => {
+        //每个input添加事件
+        let inputAll = document.querySelectorAll("input");
+        inputAll.forEach(input => {
+          if (_this.all || input.dataset.mode) {
+            input.addEventListener("focus", _this.show_keyboard);
+            if (_this.blurHide) {
+              input.addEventListener("blur", _this.hide_keyboard);
+            }
+          }
+        });
+      });
+    },
     /**注册显示键盘事件 */
     show_keyboard(e) {
       this.input = e.target;
@@ -289,7 +302,11 @@ export default {
     },
     /**注册隐藏键盘事件 */
     hide_keyboard(e) {
-      if (this.all || (e.relatedTarget && e.relatedTarget.dataset.mode)) return;
+      if (
+        (this.all && e.relatedTarget && e.relatedTarget.tagName == "INPUT") ||
+        (e.relatedTarget && e.relatedTarget.dataset.mode)
+      )
+        return;
       this.show = false;
     },
     /**重新初始化一下canvas的位置信息 */
@@ -321,7 +338,7 @@ export default {
       if (this.mode === "cn" && !pass) {
         this.cn_input += key;
         this.l_min = 0;
-        this.l_max = 12;
+        this.l_max = 10;
 
         let re = new RegExp(`^${this.cn_input}\\w*`);
         let keys = Object.keys(dict)
@@ -376,7 +393,7 @@ export default {
           this.cn_input.length - 1
         );
         this.l_min = 0;
-        this.l_max = 12;
+        this.l_max = 10;
         this.cn_list_str = dict[this.cn_input];
       } else {
         this.input.value = this.delStringLast(this.input.value, index - 1);
@@ -424,14 +441,14 @@ export default {
     },
     previous_page() {
       if (this.l_min > 0) {
-        this.l_min = this.l_min - 12;
-        this.l_max = this.l_max - 12;
+        this.l_min = this.l_min - 10;
+        this.l_max = this.l_max - 10;
       }
     },
     next_page() {
       if (this.cn_list.length > this.l_max) {
-        this.l_min += 12;
-        this.l_max += 12;
+        this.l_min += 10;
+        this.l_max += 10;
       }
     }
   }
@@ -441,6 +458,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "./style/animate.part.css";
+@import "./style/primary.scss";
+@import "./style/mini.scss";
 i {
   font-style: normal;
 }
@@ -455,7 +474,7 @@ i {
 }
 .my-keyboard {
   width: 100%;
-  min-width: 1330px;
+  // min-width: $min-width;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -464,7 +483,7 @@ i {
   .pinyin,
   .select-list {
     > div {
-      width: 1330px;
+      // width: $min-width;
       margin: 0 auto;
     }
   }
@@ -485,7 +504,7 @@ i {
     background: #fff;
     border: 1px solid rgba(209, 209, 209, 1);
     border-top: none;
-    padding: 0 20px;
+    padding: 0;
     text-align: left;
     > div {
       position: relative;
@@ -502,7 +521,7 @@ i {
     .page {
       position: absolute;
       top: 0;
-      right: 0px;
+      right: 30px;
       width: 120px;
       height: 50px;
       .previous {
@@ -519,7 +538,7 @@ i {
         line-height: 48px;
         background: #344a5d;
         color: #fff;
-        border: 1px solid #d7d7d7;
+        border: 1px solid hsl(0, 0%, 84%);
         border-radius: 5px;
         cursor: pointer;
         &:active {
@@ -541,7 +560,7 @@ i {
       line-height: 60px;
       font-size: 24px;
       font-weight: 700;
-      width: 100px;
+      // width: $key-width;
       background: #fff;
       display: inline-block;
       vertical-align: middle;
@@ -552,40 +571,41 @@ i {
       &:active {
         background: #d0d0d0;
       }
-      & + .key {
-        margin-left: 28px;
-      }
+      // & + .key {
+      //   margin-left: 28px;
+      // }
     }
     .number-box {
-      width: 900px;
+      // width: $number-width * 3 + $key-left * 2;
       display: inline-block;
       vertical-align: middle;
     }
     .del-box {
-      width: 280px;
+      // width: $number-width + $key-left * 2;
       display: inline-block;
       vertical-align: middle;
       .key {
         margin-left: 0px;
       }
+      // .key_hide{
+      //   width: $number-width;
+      // }
     }
     .hand-left-box {
-      width: 155px;
+      width: 150px;
       display: inline-block;
       vertical-align: middle;
       .key {
+        width: 140px;
         margin-left: 0px;
         margin-top: 20px;
         &:nth-of-type(1) {
           margin-top: 0px;
         }
       }
-      > span {
-        width: 140px;
-      }
     }
     .number {
-      width: 260px;
+      // width: $number-width;
       height: 80px;
       font-size: 60px;
       line-height: 80px;
@@ -594,7 +614,7 @@ i {
       }
     }
     .cap_change {
-      width: 160px;
+      width: 140px;
       color: #fff;
       background: #344a5d;
       &:active {
@@ -603,6 +623,7 @@ i {
     }
     .key_hide {
       background: #d6d1d0;
+      width: 140px;
       > .jp {
         height: 60px;
         display: inline-block;
@@ -630,9 +651,9 @@ i {
         background: #f89e9e;
       }
     }
-    .space {
-      width: 310px;
-    }
+    // .space {
+    //   width: 338px;
+    // }
   }
 }
 </style>

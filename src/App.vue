@@ -9,13 +9,18 @@
     数字：
     <input type="text" data-mode="num" />
     空：
-    <input v-if="show" @focus="$refs.keyboard.show_keyboard" type="text" />
+    <input type="text" >
+    <!-- <input v-if="show" @focus="$refs.keyboard.show_keyboard" @blur="$refs.keyboard.hide_keyboard" type="text" /> -->
     <vue-dusion-keyboard
       ref="keyboard"
       hand
       float
+      :blurHide="false"
+      size="mini"
       HandWriteApi="http://localhost/HandWriteApi/words"
     ></vue-dusion-keyboard>
+    <button >测试</button>
+    <div style="width:400px;height:400px;background:#000;"></div>
     <!-- <vue-dusion-keyboard hand float :blurHide="false"></vue-dusion-keyboard> -->
     <!-- :blurHide="false" -->
   </div>
@@ -39,6 +44,7 @@ export default {
 <style lang="scss">
 #app {
   height: 1500px;
+  width: 1080px;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
